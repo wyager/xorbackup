@@ -1,7 +1,13 @@
 #!python3
 import base64
 import sys
+import glob
 
-secret1 = base64.b64decode(open("first_secret.txt",'rb').read())
-secret2 = base64.b64decode(open("second_secret.txt",'rb').read())
-sys.stdout.buffer.write(bytes(a ^ b for (a,b) in zip(secret1,secret2)))
+def xor(str1,str2):
+    return bytes([a^b for (a,b) in zip(str1,str2)])
+
+(first, *others) = glob.glob("./*.shard")
+decrypted = base64.b64decode(open(first,'rb').read())
+for other in others:
+    decrypted = xor(decrypted, base64.b64decode(open(other,'rb').read()))
+sys.stdout.buffer.write(decrypted)
